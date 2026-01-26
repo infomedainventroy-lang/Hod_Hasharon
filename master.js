@@ -612,4 +612,3 @@ function addTeam() {
     document.getElementById('t-pin').value = "";
 }
 
-</script>
