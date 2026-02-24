@@ -12,11 +12,9 @@
 <!---   Per Site - Now Dynamic -->
 <title id="page-title">Loading...</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
     --mda-blue: #003366;
@@ -1983,6 +1981,30 @@ function addTeam() {
 }
 
 
+// פונקציה לכניסה עם אימייל וסיסמה (למשתמש רגיל)
+async function loginWithPassword() {
+    const email = document.getElementById('u-email').value; // שדה אימייל
+    const pass = document.getElementById('u-pass').value;   // שדה סיסמה
+
+    try {
+        const result = await firebase.auth().signInWithEmailAndPassword(email, pass);
+        // אחרי שהתחבר, נבדוק הרשאות
+        checkPermissions(result.user.email);
+    } catch (error) {
+        alert("שגיאה: אימייל או סיסמה לא נכונים");
+        console.error(error.message);
+    }
+}
+
+// פונקציה לכניסה עם גוגל (כפי שעשינו קודם)
+function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then((result) => {
+        checkPermissions(result.user.email);
+    }).catch(error => {
+        alert("התחברות עם גוגל נכשלה");
+    });
+}
 // Adds a new admin user with email validation and duplicate checking
 function addAdmin() {
     const email = document.getElementById('admin-email').value.trim();
@@ -2130,31 +2152,42 @@ function confirmYes() {
 }
 
 async function checkPermissions(userEmail) {
-    // 1. נמשוך את כל הנתונים מה-DB בבת אחת
-    const dbRef = firebase.database().ref();
-    const snapshot = await dbRef.once('value');
-    const data = snapshot.val();
+    try {
+        const db = firebase.database();
+        
+        // נבדוק בנפרד את רשימת האדמינים ואת רשימת הצוות
+        const adminSnapshot = await db.ref('admins').once('value');
+        const teamSnapshot = await db.ref('team').once('value');
+        
+        const admins = adminSnapshot.val() || {};
+        const team = teamSnapshot.val() || {};
 
-    const admins = data.admins || {};
-    const team = data.team || {};
+        const adminRecord = Object.values(admins).find(a => a.email && a.email.toLowerCase() === userEmail.toLowerCase());
+        const teamRecord = Object.values(team).find(t => t.email && t.email.toLowerCase() === userEmail.toLowerCase());
 
-    // 2. בדיקה האם המשתמש אדמין
-    const adminRecord = Object.values(admins).find(a => a.email && a.email.toLowerCase() === userEmail.toLowerCase());
-    
-    // 3. בדיקה האם המשתמש בצוות
-    const teamRecord = Object.values(team).find(t => t.email && t.email.toLowerCase() === userEmail.toLowerCase());
-
-    if (adminRecord && teamRecord) {
-        // המקרה המיוחד: הוא גם וגם - נציג לו כפתור בחירה או נעביר לאדמין עם גישה לצוות
-        showToast("זוהית כמנהל וכחבר צוות", "info");
-        showApp('scr-admin'); // או מסך בחירה
-    } else if (adminRecord) {
-        showApp('scr-admin');
-    } else if (teamRecord) {
-        showApp('scr-user');
-    } else {
-        alert("האימייל " + userEmail + " אינו מורשה במערכת.");
-        firebase.auth().signOut();
+        if (adminRecord && teamRecord) {
+            // אם הוא גם וגם - ניתן לו כפתור "כניסה לניהול" בתוך מסך המשתמש
+            window.isAdminUser = true; 
+            window.curU = teamRecord.name; // נשתמש בשם מהצוות לצורך הלוגים
+            showApp('scr-user');
+            alert("שלום " + teamRecord.name + ", זוהית גם כמנהל. כפתור ניהול זמין עבורך.");
+            // כאן אפשר להציג כפתור שמעביר ל-scr-admin
+        } else if (adminRecord) {
+            window.curU = adminRecord.name || userEmail;
+            showApp('scr-admin');
+        } else if (teamRecord) {
+            window.curU = teamRecord.name;
+            showApp('scr-user');
+        } else {
+            alert("האימייל " + userEmail + " אינו מורשה במערכת.");
+            firebase.auth().signOut();
+        }
+        
+        loadData(); // טעינת הנתונים רק אחרי שיודעים מי המשתמש
+        
+    } catch (error) {
+        console.error("Permission check failed:", error);
+        alert("שגיאת הרשאות: וודא שאתה רשום במערכת בצורה תקינה.");
     }
 }
 
