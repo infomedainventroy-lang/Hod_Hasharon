@@ -517,6 +517,10 @@ th {
 <button class="btn" onclick="login('user')">כניסה</button>
 <p id="err-user" style="color:red; display:none; font-weight:bold; margin-top:10px; text-align:center;">⚠️ מספר טלפון או קוד אישי שגויים</p>
 </div>
+	<button onclick="loginWithGoogle('admin')" class="google-btn">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18">
+    התחבר עם Google
+</button>
 <div class="login-card" style="background:#f1f3f5;">
 <h4>ניהול ⚙️</h4>
 <input type="email" id="a-email" placeholder="אימייל מנהל">
@@ -2052,6 +2056,45 @@ function confirmYes() {
     } else if (confirmCallback) {
         if (typeof confirmCallback === 'function') confirmCallback();
         confirmCallback = null;
+    }
+}
+	function loginWithGoogle(role) {
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth().signInWithPopup(provider)
+    .then((result) => {
+        // המשתמש התחבר בהצלחה
+        const user = result.user;
+        window.curU = user.email; // שומר את האימייל של המשתמש
+        
+        console.log("Logged in as:", user.displayName);
+        
+        // בדיקה האם המשתמש מורשה (למשל מנהל או חבר צוות)
+        checkPermissions(user.email, role);
+    })
+    .catch((error) => {
+        console.error("Google Login Error:", error.message);
+        showToast("התחברות עם גוגל נכשלה", "error");
+    });
+}
+
+function checkPermissions(email, role) {
+    // כאן אתה בודק מול ה-Database האם האימייל הזה מורשה להיות אדמין או משתמש
+    if (role === 'admin') {
+        firebase.database().ref('admins').once('value', snapshot => {
+            const admins = snapshot.val() || {};
+            // בודק אם האימייל קיים ברשימת המנהלים ב-DB
+            const isAdmin = Object.values(admins).some(a => a.email === email);
+            
+            if (isAdmin) {
+                showApp('scr-admin');
+            } else {
+                alert("אין לך הרשאות מנהל");
+                firebase.auth().signOut();
+            }
+        });
+    } else {
+        showApp('scr-user');
     }
 }
 
