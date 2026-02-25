@@ -796,7 +796,7 @@ th {
 // ============================================================================
 // 🎯 SITE SELECTOR - Change this line to switch between sites
 // ============================================================================
-const CURRENT_SITE = 'hodhasharon'; // Options: 'karnei', 'nave', 'tnkids', 'hodhasharon'
+const CURRENT_SITE = 'test'; // Options: 'karnei', 'nave', 'tnkids', 'hodhasharon'
 
 // ============================================================================
 // SITE CONFIGURATION - All per-site code consolidated here
@@ -862,8 +862,25 @@ const SITE_CONFIG = {
                 messagingSenderId: "1081567938760",
                 appId: "1:1081567938760:web:6093630be0672fdc01bdfd"
             }
-        }
+                },
+        test: {
+            title: 'מערכת מלאי test',
+            logoUrl: 'https://i.ibb.co/k2VQHrKZ/birth-Logo.webp',
+            headerText: 'test אתר',
+            logoutUrl: 'https://sites.google.com/view/aten-warehouse',
+            firebase: {
+		  apiKey: "AIzaSyD9JAMl1_bjL-DeX_ql3e8URQAFRhc-anA",
+		  authDomain: "test-7c7c0.firebaseapp.com",
+		  databaseURL: "https://test-7c7c0-default-rtdb.firebaseio.com",
+		  projectId: "test-7c7c0",
+		  storageBucket: "test-7c7c0.firebasestorage.app",
+		  messagingSenderId: "465210569707",
+		  appId: "1:465210569707:web:a43079b35bdb502de65fae",
+		  measurementId: "G-BW8QFSJ7WV"
+            }
+        },
     }
+	
 };
 
 // Get current site configuration
