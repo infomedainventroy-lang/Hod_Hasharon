@@ -14,6 +14,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root {
     --mda-blue: #003366;
@@ -555,44 +556,23 @@ th {
     background: #000;
     min-height: 0;
 }
-#scan-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
 
-/* Aim overlay */
-#scan-aim {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
+/* html5-qrcode renders inside #qr-reader */
+#qr-reader {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    background: #000 !important;
 }
-#scan-aim-box {
-    width: 80%;
-    max-width: 320px;
-    height: 120px;
-    border: 3px solid #ffc107;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 0 0 2000px rgba(0,0,0,0.4);
-    overflow: hidden;
+#qr-reader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
 }
-#scan-aim-line {
-    position: absolute;
-    left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #ffc107, transparent);
-    animation: aimScan 1.5s ease-in-out infinite;
-}
-@keyframes aimScan {
-    0%   { top: 4px; }
-    50%  { top: calc(100% - 7px); }
-    100% { top: 4px; }
-}
+/* Hide the default html5-qrcode UI chrome */
+#qr-reader__scan_region img,
+#qr-reader__dashboard,
+#qr-reader__header_message { display: none !important; }
 
 #scan-status {
     background: rgba(0,0,0,0.92);
@@ -897,14 +877,10 @@ th {
     <button id="scan-close" onclick="closeScanner()">✕ סגור</button>
   </div>
   <div id="scan-video-wrap">
-    <video id="scan-video" playsinline muted autoplay></video>
-    <canvas id="scan-canvas" style="display:none;"></canvas>
-    <div id="scan-aim">
-      <div id="scan-aim-box"><div id="scan-aim-line"></div></div>
-    </div>
+    <div id="qr-reader"></div>
   </div>
   <div id="scan-status">⏳ מאתחל מצלמה...</div>
-  <div id="scan-tip">כוון את הברקוד לתוך המסגרת</div>
+  <div id="scan-tip">כוון את הברקוד אל המסגרת</div>
 </div>
 
 <div id="toast" style="
@@ -2203,22 +2179,18 @@ function showToast(message, type = 'success') {
 
 
 // ============================================================================
-// 📷 BARCODE SCANNER  –  getUserMedia + BarcodeDetector (RAF @ 30fps)
+// 📷 BARCODE SCANNER  –  html5-qrcode @ 25fps
 // ============================================================================
 
-let _scanMode    = null;
-let _scanItemId  = null;
-let _scanItemEl  = null;
-let _scanStream  = null;
-let _scanRunning = false;
-let _scanning    = false;   // prevent concurrent detections
-let _detector    = null;
+let _scanMode   = null;
+let _scanItemId = null;
+let _scanItemEl = null;
+let _scanner    = null;
 
-// ── פתח סורק ────────────────────────────────────────────────────────────────
-function openScanner(mode, itemId = null, itemEl = null) {
-    _scanMode   = mode;
-    _scanItemId = itemId;
-    _scanItemEl = itemEl;
+function openScanner(mode, itemId, itemEl) {
+    _scanMode   = mode   || null;
+    _scanItemId = itemId || null;
+    _scanItemEl = itemEl || null;
 
     document.getElementById('scan-title').textContent =
         mode === 'set' ? '📷 סרוק ברקוד למוצר' : '📷 סרוק ברקוד מוצר';
@@ -2227,131 +2199,95 @@ function openScanner(mode, itemId = null, itemEl = null) {
     st.textContent = '⏳ מפעיל מצלמה...';
     st.className   = '';
 
+    // Reset the reader div so html5-qrcode starts fresh
+    document.getElementById('qr-reader').innerHTML = '';
     document.getElementById('scan-modal').classList.add('active');
-    setTimeout(_startCamera, 100);
+
+    setTimeout(_startScanner, 250);
 }
 
-// ── הפעל מצלמה ───────────────────────────────────────────────────────────────
-async function _startCamera() {
-    const video = document.getElementById('scan-video');
-    const st    = document.getElementById('scan-status');
+function _startScanner() {
+    const st = document.getElementById('scan-status');
 
-    // -- Init BarcodeDetector (supported: Chrome Android, Edge, Samsung Browser)
-    if (!_detector) {
-        if ('BarcodeDetector' in window) {
-            _detector = new BarcodeDetector({
-                formats: ['ean_13','ean_8','code_128','code_39','code_93',
-                          'upc_a','upc_e','itf','qr_code','data_matrix','aztec']
-            });
-        } else {
-            st.textContent = '⚠️ הדפדפן שלך לא תומך בסריקה. נסה Chrome עדכני.';
-            st.className   = 'err';
-            return;
-        }
-    }
-
-    // -- Request camera
     try {
-        _scanStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' },
-                     width:  { ideal: 1920 },
-                     height: { ideal: 1080 } },
-            audio: false
+        _scanner = new Html5Qrcode('qr-reader', {
+            verbose: false,
+            experimentalFeatures: { useBarCodeDetectorIfSupported: true }
         });
-    } catch (err) {
-        console.error(err);
-        st.className = 'err';
-        if (err.name === 'NotAllowedError')
-            st.textContent = '🚫 הרשאת מצלמה נדחתה – לך להגדרות הדפדפן ואפשר מצלמה, ואז רענן.';
-        else if (err.name === 'NotFoundError')
-            st.textContent = '📵 לא נמצאה מצלמה במכשיר.';
-        else
-            st.textContent = '⚠️ שגיאת מצלמה: ' + err.message;
-        return;
-    }
 
-    video.srcObject = _scanStream;
-    video.onloadedmetadata = () => {
-        video.play().catch(()=>{});
-        st.textContent = '🔍 סורק...';
-        _scanRunning = true;
-        requestAnimationFrame(_rafLoop);
-    };
-}
-
-// ── RAF loop – as fast as browser can go ─────────────────────────────────────
-function _rafLoop() {
-    if (!_scanRunning) return;
-
-    const video = document.getElementById('scan-video');
-
-    // Skip if video not ready or already processing previous frame
-    if (_scanning || !video || video.readyState < 2 || video.paused) {
-        requestAnimationFrame(_rafLoop);
-        return;
-    }
-
-    _scanning = true;
-
-    _detector.detect(video)
-        .then(results => {
-            _scanning = false;
-            if (results && results.length > 0 && results[0].rawValue) {
-                _onScanSuccess(results[0].rawValue);
-            } else if (_scanRunning) {
-                requestAnimationFrame(_rafLoop);
-            }
+        _scanner.start(
+            { facingMode: 'environment' },
+            {
+                fps: 25,
+                qrbox: (w, h) => ({
+                    width:  Math.min(Math.round(w * 0.8), 350),
+                    height: Math.min(Math.round(h * 0.35), 150)
+                }),
+                aspectRatio: 1.7,
+                disableFlip: false
+            },
+            (code) => { _onFound(code); },
+            ()     => { /* per-frame decode miss — ignore */ }
+        )
+        .then(() => {
+            st.textContent = '🔍 סורק — כוון ברקוד למסגרת';
         })
-        .catch(() => {
-            _scanning = false;
-            if (_scanRunning) requestAnimationFrame(_rafLoop);
+        .catch(err => {
+            st.className = 'err';
+            const msg = String(err);
+            if (msg.includes('NotAllowed') || msg.includes('Permission'))
+                st.textContent = '🚫 הרשאת מצלמה נדחתה — פתח הגדרות דפדפן ואפשר מצלמה';
+            else if (msg.includes('NotFound'))
+                st.textContent = '📵 לא נמצאה מצלמה במכשיר';
+            else
+                st.textContent = '⚠️ שגיאה: ' + msg;
         });
+
+    } catch (e) {
+        st.textContent = '⚠️ שגיאה בטעינת הסורק: ' + e.message;
+        st.className = 'err';
+    }
 }
 
-// ── ברקוד נמצא ────────────────────────────────────────────────────────────────
-async function _onScanSuccess(code) {
-    _scanRunning = false;
-    _scanning    = false;
-    _stopStream();
+async function _onFound(code) {
+    // Pause immediately to prevent duplicate triggers
+    try { await _scanner.pause(true); } catch(e) {}
 
     const st = document.getElementById('scan-status');
 
-    // מנהל: שמור ברקוד למוצר
+    // ── מנהל: שמור ברקוד למוצר ──────────────────────────────────────────
     if (_scanMode === 'set' && _scanItemId) {
         await db.ref('inventory/' + _scanItemId + '/barcode').set(code);
         if (_scanItemEl) {
             const badge = _scanItemEl.querySelector('.barcode-badge');
-            if (badge) { badge.textContent = `📦 ${code}`; badge.className = 'barcode-badge'; }
+            if (badge) { badge.textContent = '📦 ' + code; badge.className = 'barcode-badge'; }
             const item = inv.find(i => i.id === _scanItemId);
             if (item) item.barcode = code;
         }
         closeScanner();
-        showToast(`✅ ברקוד נשמר: ${code}`);
+        showToast('✅ ברקוד נשמר: ' + code);
         return;
     }
 
-    // צוות: חפש מוצר
+    // ── צוות: חפש מוצר ──────────────────────────────────────────────────
     if (_scanMode === 'find') {
         const found = inv.find(i =>
             i.barcode && String(i.barcode).trim() === String(code).trim()
         );
 
         if (!found) {
-            st.textContent = `❌ ברקוד לא מוכר: ${code}`;
+            st.textContent = '❌ ברקוד לא מוכר: ' + code;
             st.className   = 'err';
-            // נסה שוב אחרי 2 שניות
             setTimeout(() => {
                 if (!document.getElementById('scan-modal').classList.contains('active')) return;
-                st.textContent = '🔍 סורק...';
+                st.textContent = '🔍 סורק — כוון ברקוד למסגרת';
                 st.className   = '';
-                _scanRunning   = true;
-                _scanning      = false;
-                _restartStream();
+                try { _scanner.resume(); } catch(e) {}
             }, 2000);
             return;
         }
 
-        st.textContent = `✅ נמצא: ${found.name}  |  במלאי: ${found.qty}`;
+        st.textContent = '✅ נמצא: ' + found.name + '  |  במלאי: ' + found.qty;
         st.className   = 'ok';
 
         setTimeout(() => {
@@ -2370,35 +2306,23 @@ async function _onScanSuccess(code) {
                         setTimeout(() => card.classList.remove('found-highlight'), 3500);
                     }
                 });
-                showToast(`✅ נמצא: ${found.name}  (במלאי: ${found.qty})`);
+                showToast('✅ נמצא: ' + found.name + '  (במלאי: ' + found.qty + ')');
             }, 200);
         }, 900);
     }
+
     _scanMode = _scanItemId = _scanItemEl = null;
 }
 
-async function _restartStream() {
-    const video = document.getElementById('scan-video');
-    try {
-        _scanStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' } }, audio: false
-        });
-        video.srcObject = _scanStream;
-        await video.play();
-        requestAnimationFrame(_rafLoop);
-    } catch(e) {}
-}
-
-function _stopStream() {
-    if (_scanStream) { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
-    const v = document.getElementById('scan-video');
-    if (v) { v.srcObject = null; }
-}
-
-function closeScanner() {
-    _scanRunning = false;
-    _scanning    = false;
-    _stopStream();
+async function closeScanner() {
+    if (_scanner) {
+        try {
+            const state = _scanner.getState(); // 1=idle 2=scanning 3=paused
+            if (state === 2 || state === 3) await _scanner.stop();
+            _scanner.clear();
+        } catch(e) { /* ignore */ }
+        _scanner = null;
+    }
     document.getElementById('scan-modal').classList.remove('active');
     _scanMode = _scanItemId = _scanItemEl = null;
 }
