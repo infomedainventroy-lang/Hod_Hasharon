@@ -1466,6 +1466,173 @@ tr:hover td { background: var(--bg); }
 .tab-pane { animation: fadeUp .2s var(--ease) both; }
 
 /* ================================================================
+   PRODUCT IMAGE
+   ================================================================ */
+.item-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg);
+  display: block;
+  cursor: pointer;
+  transition: var(--tr);
+}
+.item-thumb:hover { opacity: .85; transform: scale(1.05); }
+
+.no-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-sm);
+  border: 1.5px dashed var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3em;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--tr);
+}
+.no-thumb:hover { border-color: var(--c-blue); background: #e3f2fd; }
+
+/* Admin item thumb (smaller row) */
+.ai-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-xs);
+  object-fit: cover;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: var(--tr);
+}
+.ai-thumb:hover { opacity: .8; transform: scale(1.05); }
+
+/* Image upload modal */
+#imgModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,27,42,.72);
+  backdrop-filter: blur(8px);
+  z-index: 9500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+#imgModal.open { display: flex; }
+
+.img-modal-box {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 26px 22px 22px;
+  width: 92%;
+  max-width: 360px;
+  box-shadow: var(--sh-xl);
+  animation: slideUp .25s cubic-bezier(.34,1.56,.64,1) both;
+}
+.img-modal-box h3 {
+  font-size: 1.05em;
+  font-weight: 800;
+  color: var(--c-navy);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.img-preview-wrap {
+  width: 100%;
+  height: 170px;
+  border-radius: var(--r-md);
+  border: 2px dashed var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 14px;
+  position: relative;
+}
+.img-preview-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.img-preview-placeholder {
+  text-align: center;
+  color: var(--text-muted);
+}
+.img-preview-placeholder .pip-icon { font-size: 2.5em; margin-bottom: 6px; }
+.img-preview-placeholder p { font-size: .8em; font-weight: 600; }
+
+.img-btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.img-option-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  font-size: .82em;
+  font-weight: 700;
+  color: var(--text-soft);
+  transition: var(--tr);
+}
+.img-option-btn .io-icon { font-size: 1.7em; }
+.img-option-btn:hover { border-color: var(--c-blue); color: var(--c-blue); background: #e3f2fd; }
+.img-option-btn.active { border-color: var(--c-blue); background: #e3f2fd; color: var(--c-blue); }
+
+.img-save-row { display: flex; gap: 8px; }
+.img-save-row button { flex: 1; }
+
+/* Full-size image viewer */
+#imgViewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 10001;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+#imgViewer.open { display: flex; }
+#imgViewer img {
+  max-width: 94vw;
+  max-height: 80vh;
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-xl);
+  object-fit: contain;
+}
+#imgViewer-close {
+  background: rgba(255,255,255,.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: var(--r-full);
+  padding: 9px 28px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: .9em;
+  transition: var(--tr);
+}
+#imgViewer-close:hover { background: rgba(255,255,255,.25); }
+
+/* ================================================================
    RESPONSIVE
    ================================================================ */
 @media (max-width: 520px) {
@@ -2623,6 +2790,9 @@ function renderUser() {
       card.className = `item-card${isOut ? ' is-out' : isLow ? ' is-low' : ''}`;
       card.dataset.id = i.id;
       card.innerHTML = `
+        ${i.image
+          ? `<img src="${esc(i.image)}" onclick="viewImage('${esc(i.image)}')" style="width:52px;height:52px;border-radius:var(--r-sm);object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;" title="לחץ להגדלה">`
+          : ''}
         <div class="item-info">
           <span class="item-name">
             ${esc(i.name)}
@@ -2762,7 +2932,10 @@ function buildAdminItem(i) {
   wrap.className = `admin-item${isOut ? ' ai-out' : isLow ? ' ai-low' : ''}`;
 
   wrap.innerHTML = `
-    <div class="ai-row">
+    <div class="ai-row" style="grid-template-columns:auto 1fr 88px auto;gap:10px;">
+      ${i.image
+        ? `<img src="${esc(i.image)}" class="ai-thumb" onclick="viewImage('${esc(i.image)}')" title="לחץ להגדלה">`
+        : `<div style="width:46px;height:46px;border-radius:var(--r-xs);border:1.5px dashed var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.2em;color:var(--text-muted);cursor:pointer;flex-shrink:0;" onclick="openImageModal('${esc(i.id)}')" title="הוסף תמונה">📷</div>`}
       <div>
         <div class="ai-name">
           ${esc(i.name)}
@@ -2786,6 +2959,7 @@ function buildAdminItem(i) {
         <button class="btn-icon bc" title="סרוק ברקוד">📷</button>
         <button class="btn-icon edit" title="שנה קטגוריה">📁</button>
         <button class="btn-icon edit" title="שנה סף מינימום">🎯</button>
+        <button class="btn-icon edit img-btn" title="תמונת מוצר">🖼️</button>
       </div>
     </div>
     <div class="ai-row-2">
@@ -2804,7 +2978,7 @@ function buildAdminItem(i) {
   const deltaRsn  = wrap.querySelector('.delta-reason');
   const plusBtn   = wrap.querySelector('.plus');
   const minusBtn  = wrap.querySelector('.minus');
-  const [delBtn, renameBtn, bcBtn, catBtn, minBtn] = wrap.querySelectorAll('.btn-icon');
+  const [delBtn, renameBtn, bcBtn, catBtn, minBtn, imgBtn] = wrap.querySelectorAll('.btn-icon');
 
   // Direct qty change
   qtyInp.addEventListener('change', async () => {
@@ -2867,6 +3041,8 @@ function buildAdminItem(i) {
   };
 
   bcBtn.onclick = () => openScanner('set', i.id, wrap);
+
+  if (imgBtn) imgBtn.onclick = () => openImageModal(i.id);
 
   delBtn.onclick = () => confirmDelete(`למחוק את "${i.name}"?`, async () => {
     await db.ref(`inventory/${i.id}`).remove();
@@ -3628,6 +3804,142 @@ document.getElementById('scan-manual-input')?.addEventListener('keydown', e => {
   }
 });
 
+/* ================================================================
+   PRODUCT IMAGE — LOGIC
+   ================================================================ */
+let _imgItemId = null;
+let _imgDataUrl = null;
+
+function openImageModal(itemId) {
+  _imgItemId = itemId;
+  _imgDataUrl = null;
+  const item = inv.find(i => i.id === itemId);
+  const existingImg = item?.image || null;
+  const preview = document.getElementById('img-preview');
+  const placeholder = document.getElementById('img-preview-placeholder');
+  const saveBtn = document.getElementById('img-save-btn');
+  const delBtn = document.getElementById('img-delete-btn');
+  if (existingImg) {
+    preview.src = existingImg;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+    delBtn.style.display = '';
+  } else {
+    preview.src = '';
+    preview.style.display = 'none';
+    placeholder.style.display = 'flex';
+    delBtn.style.display = 'none';
+  }
+  saveBtn.disabled = true;
+  saveBtn.textContent = '💾 שמור';
+  document.getElementById('img-file-input').value = '';
+  document.getElementById('img-camera-input').value = '';
+  document.getElementById('imgModal').style.display = 'flex';
+}
+
+function _imgClose() {
+  document.getElementById('imgModal').style.display = 'none';
+  _imgItemId = null;
+  _imgDataUrl = null;
+}
+
+function _imgFileChosen(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 600;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else       { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      _imgDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+      const prev = document.getElementById('img-preview');
+      const ph   = document.getElementById('img-preview-placeholder');
+      prev.src = _imgDataUrl;
+      prev.style.display = 'block';
+      ph.style.display = 'none';
+      document.getElementById('img-save-btn').disabled = false;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function _imgSave() {
+  if (!_imgItemId || !_imgDataUrl) return;
+  const btn = document.getElementById('img-save-btn');
+  btn.textContent = '⏳ שומר...';
+  btn.disabled = true;
+  try {
+    await db.ref(`inventory/${_imgItemId}/image`).set(_imgDataUrl);
+    showToast('✅ תמונה נשמרה!');
+    _imgClose();
+  } catch(e) {
+    showToast('שגיאה בשמירת תמונה', 'error');
+    btn.textContent = '💾 שמור';
+    btn.disabled = false;
+  }
+}
+
+async function _imgDelete() {
+  if (!_imgItemId) return;
+  const ok = await asyncConfirm('מחיקת תמונה', 'למחוק את תמונת המוצר?');
+  if (!ok) return;
+  await db.ref(`inventory/${_imgItemId}/image`).remove();
+  showToast('תמונה נמחקה');
+  _imgClose();
+}
+
+function viewImage(src) {
+  document.getElementById('imgViewer-img').src = src;
+  document.getElementById('imgViewer').style.display = 'flex';
+}
+
 </script>
+
+<!-- ================================================================
+     IMAGE UPLOAD MODAL
+     ================================================================ -->
+<div id="imgModal" style="position:fixed;inset:0;background:rgba(13,27,42,.72);backdrop-filter:blur(8px);z-index:9500;display:none;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border-radius:var(--r-lg);padding:26px 22px 20px;width:92%;max-width:360px;box-shadow:var(--sh-xl);animation:slideUp .25s cubic-bezier(.34,1.56,.64,1) both;">
+    <h3 style="font-size:1.05em;font-weight:800;color:var(--c-navy);margin-bottom:16px;display:flex;align-items:center;gap:8px;">🖼️ תמונת מוצר</h3>
+    <div style="width:100%;height:170px;border-radius:var(--r-md);border:2px dashed var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:14px;position:relative;">
+      <div id="img-preview-placeholder" style="text-align:center;color:var(--text-muted);">
+        <div style="font-size:2.5em;margin-bottom:6px;">🖼️</div>
+        <p style="font-size:.8em;font-weight:600;">בחר תמונה להצגה</p>
+      </div>
+      <img id="img-preview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:contain;">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <button onclick="document.getElementById('img-file-input').click()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:14px 8px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--surface);cursor:pointer;font-family:'Heebo',sans-serif;font-size:.82em;font-weight:700;color:var(--text-soft);transition:var(--tr);" onmouseover="this.style.borderColor='var(--c-blue)';this.style.color='var(--c-blue)';this.style.background='#e3f2fd';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-soft)';this.style.background='var(--surface)';">
+        <span style="font-size:1.7em;">📁</span><span>בחר קובץ</span>
+      </button>
+      <button onclick="document.getElementById('img-camera-input').click()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:14px 8px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--surface);cursor:pointer;font-family:'Heebo',sans-serif;font-size:.82em;font-weight:700;color:var(--text-soft);transition:var(--tr);" onmouseover="this.style.borderColor='var(--c-blue)';this.style.color='var(--c-blue)';this.style.background='#e3f2fd';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-soft)';this.style.background='var(--surface)';">
+        <span style="font-size:1.7em;">📸</span><span>צלם עכשיו</span>
+      </button>
+    </div>
+    <input type="file" id="img-file-input"   accept="image/*"                    style="display:none;" onchange="_imgFileChosen(this)">
+    <input type="file" id="img-camera-input" accept="image/*" capture="environment" style="display:none;" onchange="_imgFileChosen(this)">
+    <div style="display:flex;gap:8px;">
+      <button id="img-save-btn"   class="btn btn-blue"  onclick="_imgSave()"   disabled style="flex:1;">💾 שמור</button>
+      <button id="img-delete-btn" class="btn btn-red"   onclick="_imgDelete()" style="flex:0 0 auto;display:none;">🗑️</button>
+      <button                     class="btn btn-ghost" onclick="_imgClose()"  style="flex:1;">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- Full-size image viewer -->
+<div id="imgViewer" onclick="this.classList.remove('open')" style="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:10001;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <img id="imgViewer-img" src="" alt="" style="max-width:94vw;max-height:80vh;border-radius:var(--r-md);box-shadow:var(--sh-xl);object-fit:contain;">
+  <button id="imgViewer-close" onclick="event.stopPropagation();document.getElementById('imgViewer').style.display='none';" style="background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.2);border-radius:var(--r-full);padding:9px 28px;font-family:'Heebo',sans-serif;font-weight:800;cursor:pointer;font-size:.9em;">סגור</button>
+</div>
+
 </body>
 </html>
