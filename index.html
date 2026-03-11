@@ -2796,8 +2796,8 @@ function renderUser() {
         <div class="item-info">
           <span class="item-name">
             ${esc(i.name)}
-            ${isOut  ? '<span class="badge badge-out">אזל</span>'  : ''}
-            ${isLow  ? '<span class="badge badge-low">נמוך</span>' : ''}
+            ${isAdmin && isOut ? '<span class="badge badge-out">חסר</span>' : ''}
+            ${isAdmin && isLow ? '<span class="badge badge-low">נמוך</span>' : ''}
           </span>
           <span class="item-meta ${isOut ? 'is-out' : isLow ? 'is-low' : ''}">
             במלאי: <span class="qty-val">${qty}</span>
