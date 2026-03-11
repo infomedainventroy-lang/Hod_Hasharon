@@ -3844,36 +3844,64 @@ async function handleCsvUpload(input) {
       let imported = 0, updated = 0, row = 0;
 
       for (let idx = 1; idx < lines.length; idx++) {
-        const parts = lines[idx].split(',');
+        const parts = lines[idx].split(',').map(p => p.trim());
         if (parts.length < 3) continue;
-        const n    = parts[0].trim(), c = parts[1].trim();
-        const q    = parseInt(parts[2], 10) || 0;
+        const category    = parts[0];
+        const itemName    = parts[1];
+
+        const newQuantityRaw = parts[2];
+        const newQuantity = newQuantityRaw === "" ? null : Number(newQuantityRaw);
+        if (newQuantity !== null && Number.isNaN(newQuantity)) continue;
+        
         const m    = parts[3] ? parseInt(parts[3], 10) : undefined;
         const bc   = (parts[4] || '').trim();
         const mid  = (parts[5] || '').trim();
         const mname= (parts[6] || '').trim();
-        if (!n || !c) continue;
+        if (!itemName || !category) continue;
+        const nameNorm = safeLower(itemName);
+        const ex = inv.find(i => safeLower(i.name) === nameNorm);
 
-        const ex = inv.find(i => i.name.toLowerCase() === n.toLowerCase());
         if (ex?.id) {
-          const diff = q - (ex.qty ?? 0);
-          if (diff !== 0) await changeQuantity({ itemId:ex.id, delta:diff, user:window.curU||'CSV', reason:'ייבוא CSV', action:diff>0?'add':'sub' });
-          const upd = { category: c, name: n };
-          if (Number.isFinite(m) && m >= 0) upd.minQty = m;
-          if (bc)    upd.barcode      = bc;
-          if (mid)   upd.madanet_id   = mid;
-          if (mname) upd.madanet_name = mname;
-          await db.ref('inventory/' + ex.id).update(upd);
-          updated++;
+          if (newQuantity !== null) {
+            const diff = newQuantity - (ex.qty ?? 0);
+            if (diff !== 0) {
+              const oldQty = ex.qty ?? 0;
+              const newQty = oldQty + diff;
+              showToast(`${itemName}: ${oldQty} → ${newQty}`);
+              await changeQuantity({
+                  itemId: ex.id,
+                  delta: diff,
+                  user: window.curU || 'CSV',
+                  reason: 'ייבוא CSV',
+                  action: diff > 0 ? 'add' : 'sub'
+              });
+              
+              const upd = { category: category, name: itemName };
+              if (Number.isFinite(m) && m >= 0) upd.minQty = m;
+              if (bc)    upd.barcode      = bc;
+              if (mid)   upd.madanet_id   = mid;
+              if (mname) upd.madanet_name = mname;
+              await db.ref('inventory/' + ex.id).update(upd);
+              updated++;
+            }
+          }
         } else {
+          // new item
           const ref  = db.ref('inventory').push();
-          const data = { name:n, category:c, qty:0 };
+          const data = { name:itemName, category:category, qty:0 };
           if (Number.isFinite(m) && m >= 0) data.minQty = m;
           if (bc)    data.barcode      = bc;
           if (mid)   data.madanet_id   = mid;
           if (mname) data.madanet_name = mname;
           await ref.set(data);
-          if (q > 0) await changeQuantity({ itemId:ref.key, delta:q, user:window.curU||'CSV', reason:'כמות התחלתית (CSV)', action:'add' });
+          if (newQuantity > 0) 
+          await changeQuantity({ 
+            itemId:ref.key, 
+            delta:newQuantity, 
+            user:window.curU||'CSV', 
+            reason:'כמות התחלתית (CSV)', 
+            action:'add' 
+          });
           imported++;
         }
 
@@ -4114,7 +4142,9 @@ async function deleteAdmin(id, email) {
 function saveTicker()    { db.ref('settings/ticker').set(document.getElementById('set-ticker').value); showToast('✓ הודעה עודכנה'); }
 function saveMsg()       { db.ref('settings/msg').set(document.getElementById('set-msg').value); showToast('✓ הודעת מערכת עודכנה'); }
 function saveVersion()   { db.ref('settings/version').set(document.getElementById('set-version').value); showToast('✓ גרסה עודכנה'); }
-
+function safeLower(v) {
+    return (typeof v === 'string') ? v.toLowerCase() : '';
+}
 function saveThreshold() {
   const v = parseInt(document.getElementById('set-threshold').value, 10);
   if (!Number.isFinite(v) || v < 0) return showToast('ערך לא תקין', 'error');
