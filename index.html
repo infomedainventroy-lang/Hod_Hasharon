@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>
-  const APP_VERSION = "1.07";
+  const APP_VERSION = "4.00";
   const APP_BUILD_TS = Date.now();
 </script>
 <title id="page-title">מערכת מלאי מד"א</title>
@@ -1550,7 +1550,6 @@ tr:hover td { background: var(--bg); }
   <div id="scr-admin" class="hidden">
     <nav class="nav-tabs" id="admin-nav">
       <button class="tab-btn active" onclick="showTab('tab-dash',this)">📊 דאשבורד</button>
-     
       <button class="tab-btn" onclick="showTab('tab-inv',this)">📦 מלאי</button>
       <button class="tab-btn" onclick="showTab('tab-team',this)">👥 צוות</button>
       <button id="tab-logs-btn" class="tab-btn" onclick="showTab('tab-logs',this)">📜 לוגים</button>
@@ -1643,7 +1642,8 @@ tr:hover td { background: var(--bg); }
             <input type="text" id="n-barcode" class="app-input" placeholder="📦 ברקוד (אופציונלי)" autocomplete="off" style="flex:1;margin-bottom:0;">
           </div>
           <div class="input-row" style="margin-top:0;">
-
+            <input type="text" id="n-madanet-id"   class="app-input" placeholder='מזהה מד"אנט (אופציונלי)' autocomplete="off" style="width:160px;margin-bottom:0;">
+            <input type="text" id="n-madanet-name" class="app-input" placeholder='שם מד"אנט (אופציונלי)'  autocomplete="off" style="flex:1;margin-bottom:0;">
           </div>
           <button class="btn btn-blue" style="margin-top:10px;" onclick="addItem()">➕ הוסף למלאי</button>
         </div>
@@ -1802,7 +1802,7 @@ tr:hover td { background: var(--bg); }
 
           <div class="setting-row">
             <label>גרסה נדרשת:</label>
-            <input type="text" id="set-version" class="sr-input" style="width:90px;" placeholder="1.07">
+            <input type="text" id="set-version" class="sr-input" style="width:90px;" placeholder="4.00">
             <button class="btn w-auto sm btn-blue" onclick="saveVersion()">שמור</button>
           </div>
         </div>
@@ -2200,7 +2200,7 @@ function loadData() {
   });
 
 // ---- LOGS ----
-db.ref('logs').on('value', snap => {
+  db.ref('logs').on('value', snap => {
     try {
       logs = [];
       const data = snap.val();
@@ -2233,6 +2233,7 @@ db.ref('logs').on('value', snap => {
 if (typeof loadData === 'function') {
     loadData();
 }
+
 /* ================================================================
    HELPER — HTML escape
    ================================================================ */
