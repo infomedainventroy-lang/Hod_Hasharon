@@ -1759,10 +1759,7 @@ tr:hover td { background: var(--bg); }
 
       <!-- DASHBOARD -->
       <div id="tab-dash" class="tab-pane">
-        <div id="admin-alert-banner" class="alert-banner critical">
-          <h4>🚨 פריטים חסרים / מלאי נמוך</h4>
-          <div id="admin-alert-list" class="ab-list"></div>
-        </div>
+
         <div class="stats-grid">
           <div class="stat-card"><span id="st-total" class="stat-num">0</span><div class="stat-label">פריטים</div></div>
           <div class="stat-card"><span id="st-cats" class="stat-num">0</span><div class="stat-label">קטגוריות</div></div>
@@ -2813,7 +2810,6 @@ function checkLowStock() {
     const q = Number.isFinite(i.qty) ? i.qty : 0;
     return `${q===0?'🚨':'⚠️'} <b>${esc(i.name)}</b> — נותרו <b style="color:var(--c-red)">${q}</b>`;
   }).join('<br>');
-  const ab = document.getElementById('admin-alert-banner');
   const al = document.getElementById('admin-alert-list');
   if (ab && al) {
     if (low.length) { ab.classList.add('show'); al.innerHTML = makeList(low); }
