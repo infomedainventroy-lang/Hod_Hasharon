@@ -12,8 +12,8 @@
 <script>
 // Inline PWA manifest
 const _pwaManifest = {
-  name: 'מערכת מלאי מד"א',
-  short_name: 'מלאי מד"א',
+  name: 'מערכת מלאי מדא',
+  short_name: 'מלאי מדא',
   description: 'מערכת ניהול מלאי מגן דוד אדום',
   start_url: '/',  // valid absolute path
   display: 'standalone',
@@ -29,10 +29,10 @@ const _blob = new Blob([JSON.stringify(_pwaManifest)], {type:'application/json'}
 document.getElementById('pwa-manifest').href = URL.createObjectURL(_blob);
 </script>
 <script>
-  const APP_VERSION = "1.20";
-  const APP_BUILD_TS = 1774618219022;
+  const APP_VERSION = "1.22";
+  const APP_BUILD_TS = 1775409960390;
 </script>
-<title id="page-title">מערכת מלאי מד"א</title>
+<title id="page-title">מערכת מלאי מדא</title>
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2011,7 +2011,7 @@ tr:hover td { background: var(--bg); }
     background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.12) 3px,rgba(0,0,0,.12) 4px);"></div>
   <div id="sp-logo">
     <img id="sp-logo-img" src="" alt="לוגו">
-    <div class="sp-t1" id="splash-title">מערכת ניהול מלאי מד"א</div>
+    <div class="sp-t1" id="splash-title">מערכת ניהול מלאי מדא</div>
     <div class="sp-t2">מגן דוד אדום</div>
   </div>
   <div id="sp-wipe-t" style="position:absolute;left:0;right:0;height:50%;background:#000;top:0;transform-origin:top;transform:scaleY(0);z-index:20;pointer-events:none;"></div>
@@ -2042,19 +2042,19 @@ if (sessionStorage.getItem('mda_station')) {
     <div class="station-card" onclick="selectStation('hodhasharon')">
       <img src="https://cdn.jsdelivr.net/gh/infomedainventroy-lang/mda-system@main/Hod_Hasharon_photo.png" alt="הוד השרון">
       <span class="sc-name">הוד השרון</span>
-      <span class="sc-sub">מד"א הוד השרון</span>
+      <span class="sc-sub">מדא הוד השרון</span>
       <div class="sc-arrow">←</div>
     </div>
     <div class="station-card" onclick="selectStation('nave')">
       <img src="https://cdn.jsdelivr.net/gh/infomedainventroy-lang/Nave_Yamin@main/Neve-Yamin.png" alt="נווה ימין">
       <span class="sc-name">נווה ימין</span>
-      <span class="sc-sub">מד"א נווה ימין</span>
+      <span class="sc-sub">מדא נווה ימין</span>
       <div class="sc-arrow">←</div>
     </div>
     <div class="station-card" onclick="selectStation('karnei')">
       <img src="https://cdn.jsdelivr.net/gh/infomedainventroy-lang/Karnei_Shomron-@main/קרני%20שומרון.png" alt="קרני שומרון">
       <span class="sc-name">קרני שומרון</span>
-      <span class="sc-sub">מד"א קרני שומרון</span>
+      <span class="sc-sub">מדא קרני שומרון</span>
       <div class="sc-arrow">←</div>
     </div>
   </div>
@@ -2185,7 +2185,7 @@ if (sessionStorage.getItem('mda_station')) {
     <div class="header-logo">
       <img id="header-logo" src="" alt="לוגו">
     </div>
-    <div class="header-title" id="site-header">מד"א מלאי</div>
+    <div class="header-title" id="site-header">מדא מלאי</div>
     <div class="header-user-pill" id="header-user"></div>
   </div>
 
@@ -2408,6 +2408,7 @@ if (sessionStorage.getItem('mda_station')) {
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-green w-auto sm" onclick="downloadReportCSV()">📥 ייצא CSV</button>
         <button class="btn btn-blue w-auto sm" onclick="downloadReportPDF()">🖨️ הדפס</button>
+        <button class="btn w-auto sm" style="background:linear-gradient(135deg,#6a1b9a,#8e24aa);color:white;border:none;" onclick="generateMonthlyInventoryPDF()">📄 סיכום חודשי</button>
       </div>
     </div>
 
@@ -2557,8 +2558,8 @@ if (sessionStorage.getItem('mda_station')) {
             <input type="text" id="n-barcode" class="app-input" placeholder="📦 ברקוד (אופציונלי)" autocomplete="off" style="flex:1;margin-bottom:0;">
           </div>
           <div class="input-row" style="margin-top:0;">
-            <input type="text" id="n-madanet-id"   class="app-input" placeholder='מזהה מד"אנט (אופציונלי)' autocomplete="off" style="width:160px;margin-bottom:0;">
-            <input type="text" id="n-madanet-name" class="app-input" placeholder='שם מד"אנט (אופציונלי)'  autocomplete="off" style="flex:1;margin-bottom:0;">
+            <input type="text" id="n-madanet-id"   class="app-input" placeholder='מזהה מדאנט (אופציונלי)' autocomplete="off" style="width:160px;margin-bottom:0;">
+            <input type="text" id="n-madanet-name" class="app-input" placeholder='שם מדאנט (אופציונלי)'  autocomplete="off" style="flex:1;margin-bottom:0;">
           </div>
           <button class="btn btn-blue" style="margin-top:10px;" onclick="addItem()">➕ הוסף למלאי</button>
         </div>
@@ -2576,7 +2577,7 @@ if (sessionStorage.getItem('mda_station')) {
             <div class="ip-text" id="ip-text">מייבא...</div>
           </div>
           <div style="font-size:.76em;color:var(--text-muted);margin-top:6px;">
-            פורמט CSV: קטגוריה, שם, כמות, מינימום, ברקוד, מזהה מד"אנט, שם מד"אנט
+            פורמט CSV: קטגוריה, שם, כמות, מינימום, ברקוד, מזהה מדאנט, שם מדאנט
           </div>
         </div>
 
@@ -3241,9 +3242,9 @@ sessionStorage.setItem('mda_firebase_for', CURRENT_SITE);
 
 const SITE_CONFIG = {
   karnei: {
-    title:      'מערכת מלאי מד"א קרני שומרון',
+    title:      'מערכת מלאי מדא קרני שומרון',
     logoUrl:    'https://cdn.jsdelivr.net/gh/infomedainventroy-lang/Karnei_Shomron-@main/קרני%20שומרון.png',
-    headerText: 'מד"א קרני שומרון',
+    headerText: 'מדא קרני שומרון',
     firebase: {
       apiKey: "AIzaSyD9ApZOKj7aRUmcAG8MVncsCitOOJBH-cs",
       authDomain:  "meda-inventory-karnei-shomron.firebaseapp.com",
@@ -3255,9 +3256,9 @@ const SITE_CONFIG = {
     }
   },
   nave: {
-    title:      'מערכת מלאי מד"א נווה ימין',
+    title:      'מערכת מלאי מדא נווה ימין',
     logoUrl:    'https://cdn.jsdelivr.net/gh/infomedainventroy-lang/Nave_Yamin@main/Neve-Yamin.png',
-    headerText: 'מד"א נווה ימין',
+    headerText: 'מדא נווה ימין',
     firebase: {
       apiKey: "AIzaSyBfpldPI5gydNrrF0UaJJUkCKhejJiQq3U",
       authDomain: "meda-inventory-neve-yamin.firebaseapp.com",
@@ -3269,9 +3270,9 @@ const SITE_CONFIG = {
     }
   },
   hodhasharon: {
-    title:      'מערכת מלאי מד"א הוד השרון',
+    title:      'מערכת מלאי מדא הוד השרון',
     logoUrl:    'https://cdn.jsdelivr.net/gh/infomedainventroy-lang/mda-system@main/Hod_Hasharon_photo.png',
-    headerText: 'מד"א הוד השרון',
+    headerText: 'מדא הוד השרון',
     firebase: {
       apiKey: "AIzaSyCe4yRcJF9_3HXze3HGCwKMLNUjDdlORRM",
       authDomain: "mda-inventory.firebaseapp.com",
@@ -3340,7 +3341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     splash.style.display = 'block';
     if (logoImg) logoImg.src = CFG.logoUrl || "https://cdn.jsdelivr.net/gh/infomedainventroy-lang/mda-system-next-version@main/main_logo.png";
     const splashTitle = document.getElementById('splash-title');
-    if (splashTitle) splashTitle.textContent = CFG.headerText || 'מערכת ניהול מלאי מד"א';
+    if (splashTitle) splashTitle.textContent = CFG.headerText || 'מערכת ניהול מלאי מדא';
 
     let W = canvas.width  = window.innerWidth;
     let H = canvas.height = window.innerHeight;
@@ -4875,7 +4876,7 @@ async function handleCsvUpload(input) {
 }
 
 function downloadInv() {
-  let csv = '\uFEFFשם,קטגוריה,כמות,מינימום,ברקוד,מזהה מד"אנט,שם מד"אנט\n';
+  let csv = '\uFEFFשם,קטגוריה,כמות,מינימום,ברקוד,מזהה מדאנט,שם מדאנט\n';
   inv.forEach(i => {
     csv += [csvSafe(i.name), csvSafe(i.category), i.qty??0, i.minQty??'', csvSafe(i.barcode||''), csvSafe(i.madanet_id||''), csvSafe(i.madanet_name||'')].join(',') + '\n';
   });
@@ -5208,6 +5209,382 @@ function downloadReportCSV() {
 /* ── Print ── */
 function downloadReportPDF() {
   window.print();
+}
+
+/* ── Monthly Inventory Summary PDF ── */
+function generateMonthlyInventoryPDF() {
+  // ── Ask for month/year ──
+  const now = new Date();
+  const defaultMonth = now.getMonth() + 1;
+  const defaultYear  = now.getFullYear();
+
+  // Build a small modal to pick month/year
+  const existing = document.getElementById('monthly-pdf-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'monthly-pdf-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(13,27,42,.75);backdrop-filter:blur(8px);z-index:9900;display:flex;align-items:center;justify-content:center;padding:16px;';
+
+  const MONTH_NAMES_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  let monthOpts = MONTH_NAMES_HE.map((m,i) => `<option value="${i+1}" ${i+1===defaultMonth?'selected':''}>${m}</option>`).join('');
+  let yearOpts  = [defaultYear-1, defaultYear, defaultYear+1].map(y => `<option value="${y}" ${y===defaultYear?'selected':''}>${y}</option>`).join('');
+
+  modal.innerHTML = `
+    <div style="background:var(--surface);border-radius:var(--r-lg);padding:28px 24px 22px;width:100%;max-width:360px;box-shadow:var(--sh-xl);animation:slideUp .25s cubic-bezier(.34,1.56,.64,1) both;">
+      <h3 style="font-size:1.05em;font-weight:800;color:var(--c-navy);margin-bottom:18px;display:flex;align-items:center;gap:8px;">📄 יצירת סיכום חודשי</h3>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:.8em;font-weight:700;color:var(--text-soft);display:block;margin-bottom:5px;">חודש</label>
+        <select id="mpdf-month" class="app-select" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Heebo',sans-serif;font-size:14px;background:var(--surface);color:var(--text);">${monthOpts}</select>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="font-size:.8em;font-weight:700;color:var(--text-soft);display:block;margin-bottom:5px;">שנה</label>
+        <select id="mpdf-year" class="app-select" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Heebo',sans-serif;font-size:14px;background:var(--surface);color:var(--text);">${yearOpts}</select>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="_doMonthlyPDF()" style="flex:1;padding:12px;background:linear-gradient(135deg,#6a1b9a,#8e24aa);color:white;border:none;border-radius:var(--r-sm);font-family:'Heebo',sans-serif;font-size:.95em;font-weight:800;cursor:pointer;">📄 צור PDF</button>
+        <button onclick="document.getElementById('monthly-pdf-modal').remove()" style="flex:1;padding:12px;background:var(--border);color:var(--text);border:none;border-radius:var(--r-sm);font-family:'Heebo',sans-serif;font-size:.95em;font-weight:700;cursor:pointer;">ביטול</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+function _doMonthlyPDF() {
+  const selMonth = parseInt(document.getElementById('mpdf-month').value, 10);
+  const selYear  = parseInt(document.getElementById('mpdf-year').value,  10);
+  document.getElementById('monthly-pdf-modal').remove();
+
+  const MONTH_NAMES_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const monthLabel = MONTH_NAMES_HE[selMonth - 1] + ' ' + selYear;
+
+  // ── Time range for selected month ──
+  const fromDate = new Date(selYear, selMonth - 1, 1, 0, 0, 0, 0);
+  const toDate   = new Date(selYear, selMonth,     0, 23, 59, 59, 999);
+  const fromTS   = fromDate.getTime();
+  const toTS     = toDate.getTime();
+
+  // ── Per-item stats from logs ──
+  const itemStats = {}; // itemName → { additions, usage, firstBefore }
+  const monthLogs = logs.filter(l => l.timestamp >= fromTS && l.timestamp <= toTS);
+
+  monthLogs.forEach(l => {
+    const key    = l.item || l.itemName || l.itemId || '';
+    if (!key) return;
+    if (!itemStats[key]) itemStats[key] = { additions: 0, usage: 0, firstTS: Infinity, firstBefore: null };
+    const s      = itemStats[key];
+    const action = l.action || 'take';
+    const amount = Number.isFinite(l.amount) ? l.amount : Math.abs(l.delta || 0);
+
+    if (action === 'add' || (action === 'manual' && (l.delta || 0) > 0)) {
+      s.additions += amount;
+    } else if (action === 'take' || action === 'sub' || (action === 'manual' && (l.delta || 0) < 0)) {
+      s.usage += amount;
+    }
+    // Track earliest log to get start-of-month qty
+    if ((l.timestamp || 0) < s.firstTS) {
+      s.firstTS     = l.timestamp;
+      s.firstBefore = l.qty_before ?? null;
+    }
+  });
+
+  // ── Group inventory by category ──
+  const catMap = {};
+  [...inv].forEach(item => {
+    const cat = (item.category || 'כללי').trim();
+    if (!catMap[cat]) catMap[cat] = [];
+    catMap[cat].push(item);
+  });
+
+  // Sort categories
+  const categories = Object.keys(catMap).sort((a,b) => a.localeCompare(b, 'he'));
+
+  // ── Build HTML for print window ──
+  const siteName = (typeof CFG !== 'undefined' && CFG.headerText) ? CFG.headerText : 'מדא';
+
+  let tableRows = '';
+  categories.forEach(cat => {
+    // Category header row
+    tableRows += `<tr class="cat-row"><td colspan="9">${cat}</td></tr>`;
+    catMap[cat].forEach(item => {
+      const stats      = itemStats[item.name] || {};
+      const additions  = stats.additions || 0;
+      const usage      = stats.usage     || 0;
+      const currentQty = item.qty ?? 0;
+      // Start of month qty: if we have a log for this item, use firstBefore; else estimate
+      let startQty;
+      if (stats.firstBefore != null) {
+        startQty = stats.firstBefore;
+      } else {
+        // No logs this month — assume current qty (no change)
+        startQty = currentQty;
+      }
+      const madanetId   = item.madanet_id   || '';
+      const madanetName = item.madanet_name  || '';
+
+      // Highlight if below min
+      const isCritical = item.minQty != null && currentQty < item.minQty;
+      const rowStyle   = isCritical ? ' class="low-row"' : '';
+
+      tableRows += `<tr${rowStyle}>
+        <td class="cell-id">${madanetId}</td>
+        <td class="cell-name">${item.name}</td>
+        <td class="cell-madaname">${madanetName}</td>
+        <td class="cell-num">${startQty}</td>
+        <td class="cell-num">${usage || ''}</td>
+        <td class="cell-num">${additions || ''}</td>
+        <td class="cell-num bold ${isCritical?'red':''}">${currentQty}</td>
+      </tr>`;
+    });
+  });
+
+  const totalItems    = inv.length;
+  const totalAdditions= Object.values(itemStats).reduce((s,v)=>s+v.additions,0);
+  const totalUsage    = Object.values(itemStats).reduce((s,v)=>s+v.usage,0);
+  const lowItems      = inv.filter(i => i.minQty != null && i.qty < i.minQty).length;
+
+  const logoUrl  = (typeof CFG !== 'undefined' && CFG.logoUrl)  ? CFG.logoUrl  : '';
+  const siteUrl  = window.location.href;
+
+  const html = `<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>${siteName} — סיכום מלאי ${monthLabel}</title>
+${logoUrl ? `<link rel="icon" type="image/png" href="${logoUrl}">` : ''}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800;900&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Heebo', Arial, sans-serif;
+    direction: rtl;
+    background: #f4f6f9;
+    color: #1a202c;
+    font-size: 11px;
+  }
+  .page-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+  /* ── Header ── */
+  .report-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1e3a5f 100%);
+    color: white;
+    padding: 18px 22px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+  }
+  .report-header h1 { font-size: 1.3em; font-weight: 900; }
+  .report-header .subtitle { font-size: .82em; opacity: .75; margin-top: 3px; }
+  .station-badge {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 20px;
+    padding: 3px 14px;
+    font-size: .82em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: .04em;
+  }
+  .report-header .logo {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .report-header .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .report-header .logo-emoji { font-size: 2em; }
+  /* ── Summary bar ── */
+  .summary-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .sum-card {
+    flex: 1;
+    background: white;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid #e1e6ed;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  }
+  .sum-num { font-size: 1.6em; font-weight: 900; display: block; line-height: 1; }
+  .sum-lbl { font-size: .7em; opacity: .6; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
+  .sum-card.danger .sum-num { color: #d32f2f; }
+  /* ── Table ── */
+  .table-wrap {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e1e6ed;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10.5px;
+  }
+  thead tr {
+    background: linear-gradient(135deg, #0d1b2a 0%, #152538 100%);
+    color: white;
+  }
+  thead th {
+    padding: 9px 7px;
+    font-weight: 800;
+    font-size: .85em;
+    text-align: center;
+    white-space: nowrap;
+    border-left: 1px solid rgba(255,255,255,.12);
+  }
+  thead th:first-child { border-left: none; }
+  thead th.th-name { text-align: right; }
+  tbody tr { border-bottom: 1px solid #f0f2f5; }
+  tbody tr:hover { background: #f8f9fc; }
+  tbody td { padding: 6px 7px; vertical-align: middle; }
+  .cell-id      { color: #6a7485; font-size: .85em; white-space: nowrap; text-align: center; }
+  .cell-name    { font-weight: 600; min-width: 150px; }
+  .cell-madaname{ color: #4a5568; font-size: .88em; min-width: 120px; }
+  .cell-num     { text-align: center; font-weight: 700; font-size: 1em; }
+  .bold         { font-weight: 900; }
+  .red          { color: #d32f2f; }
+  /* Category rows */
+  .cat-row td {
+    background: linear-gradient(90deg, #1e3a5f 0%, #2a5080 100%);
+    color: white;
+    font-weight: 800;
+    font-size: .92em;
+    padding: 7px 12px;
+    letter-spacing: .03em;
+  }
+  /* Low stock */
+  .low-row { background: #fff5f5 !important; }
+  .low-row .cell-name { color: #b71c1c; }
+  /* Footer */
+  .report-footer {
+    text-align: center;
+    margin-top: 14px;
+    color: #8a96a8;
+    font-size: .78em;
+  }
+  /* Action buttons bar (hidden on print) */
+  .action-bar {
+    position: fixed;
+    top: 14px; left: 14px;
+    display: flex; gap: 8px;
+    z-index: 999;
+  }
+  .action-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Heebo', sans-serif;
+    font-size: .9em;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.22);
+    transition: transform .15s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .action-btn:hover { transform: scale(1.04); }
+  .btn-print { background: linear-gradient(135deg,#6a1b9a,#8e24aa); color: white; }
+  .btn-back  { background: linear-gradient(135deg,#1a6eb5,#1565c0); color: white; }
+  @media print {
+    body { background: white; }
+    .action-bar { display: none !important; }
+    .page-wrap { padding: 8px; }
+    .report-header { border-radius: 0; }
+    .table-wrap { box-shadow: none; border: 1px solid #ccc; }
+    table { font-size: 9px; }
+    tbody td { padding: 4px 5px; }
+    thead th { padding: 6px 5px; }
+    .sum-card { box-shadow: none; }
+    @page { size: A4 portrait; margin: 8mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="action-bar">
+  <button class="action-btn btn-print" onclick="window.print()">🖨️ שמור / הדפס PDF</button>
+  <a class="action-btn btn-back" href="${siteUrl}" target="_blank">🏠 חזרה למערכת</a>
+</div>
+
+<div class="page-wrap">
+
+  <div class="report-header">
+    <div>
+      <div class="station-badge">${siteName}</div>
+      <h1>📋 סיכום מלאי חודשי — ${monthLabel}</h1>
+      <div class="subtitle">הופק ב-${new Date().toLocaleDateString('he-IL')}</div>
+    </div>
+    <div class="logo">
+      ${logoUrl
+        ? `<img src="${logoUrl}" alt="${siteName}" onerror="this.parentElement.innerHTML='<span class=logo-emoji>🚑</span>'">`
+        : '<span class="logo-emoji">🚑</span>'}
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <div class="sum-card">
+      <span class="sum-num">${totalItems}</span>
+      <span class="sum-lbl">סוגי פריטים</span>
+    </div>
+    <div class="sum-card">
+      <span class="sum-num">${totalUsage}</span>
+      <span class="sum-lbl">שימוש חודשי</span>
+    </div>
+    <div class="sum-card">
+      <span class="sum-num">${totalAdditions}</span>
+      <span class="sum-lbl">הוספות</span>
+    </div>
+    <div class="sum-card danger">
+      <span class="sum-num">${lowItems}</span>
+      <span class="sum-lbl">מלאי נמוך</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>מזהה<br>מדאנט</th>
+          <th class="th-name">שם</th>
+          <th class="th-name">שם מדאנט</th>
+          <th>כמות<br>תחילת חודש</th>
+          <th>שימוש<br>חודשי</th>
+          <th>הוספה<br>חודשית</th>
+          <th>כמות<br>נוכחית</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tableRows}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="report-footer">
+    * שורות בהדגשה אדומה = כמות מתחת לתקן · הופק אוטומטית ע"י מערכת מדא מלאי
+  </div>
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    showToast('⚠️ אנא אפשר חלונות קופצים בדפדפן', 'warning');
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
 }
 
 /* ================================================================
@@ -6042,7 +6419,7 @@ async function registerBiometric() {
   const bioPath = (role === 'admin' ? 'admins/' : 'team/') + userId + '/biometrics';
   const snap    = await db.ref(bioPath).once('value');
   const existing = snap.val() || {};
-  if (Object.keys(existing).length >= 3) return showToast('הגעת למגבלת 3 מכשירים ביומטריים', 'warning');
+  if (Object.keys(existing).length >= 5) return showToast('הגעת למגבלת 5 מכשירים ביומטריים', 'warning');
 
   // Build device label
   const ua = navigator.userAgent;
@@ -6062,7 +6439,7 @@ async function registerBiometric() {
     const credential = await navigator.credentials.create({
       publicKey: {
         challenge: randomChallenge(),
-        rp: { name: 'מד"א מלאי', id: rpId },
+        rp: { name: 'מדא מלאי', id: rpId },
         user: {
           id:          userIdBytes,
           name:        window.curU || userId,
@@ -6414,7 +6791,7 @@ async function testDcWebhook() {
 
   showToast('📡 שולח הודעת בדיקה ל-Discord...', 'info', 2500);
 
-  const siteTitle = CFG?.headerText || 'מד"א';
+  const siteTitle = CFG?.headerText || 'מדא';
   const alerts = [
     _dc.alertOut   ? '🚨 אזל'    : '',
     _dc.alertLow   ? '⚠️ נמוך'   : '',
@@ -6492,7 +6869,7 @@ async function _dcFlushBatch() {
   if (!_dcBatchQueue.length || !_dc.webhookUrl) return;
 
   const items    = _dcBatchQueue.splice(0);
-  const siteTitle = CFG?.headerText || 'מד"א';
+  const siteTitle = CFG?.headerText || 'מדא';
 
   const META = {
     out:   { color: 0xD32F2F, emoji: '🚨', title: 'פריט אזל מהמלאי!'   },
@@ -6724,7 +7101,7 @@ function _nextTimeLabel(type) {
 
 async function sendScheduledReport(period) {
   if (!_dc.webhookUrl) return;
-  const siteTitle = CFG?.headerText || 'מד"א';
+  const siteTitle = CFG?.headerText || 'מדא';
   const now       = new Date();
 
   // Period label
@@ -7596,9 +7973,9 @@ setInterval(() => {
         <input type="text" id="eim-barcode" class="modal-input" style="width:100%;">
       </div>
     </div>
-    <label style="font-size:.82em;font-weight:700;color:var(--text-muted);display:block;margin-bottom:4px;">מזהה מד"אנט</label>
+    <label style="font-size:.82em;font-weight:700;color:var(--text-muted);display:block;margin-bottom:4px;">מזהה מדאנט</label>
     <input type="text" id="eim-madanet-id" class="modal-input" style="width:100%;margin-bottom:10px;">
-    <label style="font-size:.82em;font-weight:700;color:var(--text-muted);display:block;margin-bottom:4px;">שם מד"אנט</label>
+    <label style="font-size:.82em;font-weight:700;color:var(--text-muted);display:block;margin-bottom:4px;">שם מדאנט</label>
     <input type="text" id="eim-madanet-name" class="modal-input" style="width:100%;margin-bottom:16px;">
     <div style="display:flex;gap:8px;">
       <button class="btn btn-blue" onclick="saveEditItem()" style="flex:1;">💾 שמור שינויים</button>
@@ -7638,7 +8015,7 @@ setInterval(() => {
       <div class="chat-hd-left">
         <div class="chat-hd-icon">💬</div>
         <div>
-          <div class="chat-hd-title" id="chatWidgetTitle">מוקד תמיכה מד"א</div>
+          <div class="chat-hd-title" id="chatWidgetTitle">מוקד תמיכה מדא</div>
           <div class="chat-hd-sub" id="chatWidgetSub">
             <div class="chat-online-dot"></div>
             <span id="chatWidgetSubText">בוט חכם · 24/7</span>
@@ -7789,8 +8166,8 @@ function _cwStartBot() {
   _cwTempTicket = {};
   _cwRenderedKeys = new Set();
   
-  const stationName = (window.SITE_CONFIG && _cwStationKey) ? (window.SITE_CONFIG[_cwStationKey]?.headerText || 'מד"א') : 'מד"א';
-  document.getElementById('chatWidgetTitle').textContent = 'מוקד תמיכה מד"א';
+  const stationName = (window.SITE_CONFIG && _cwStationKey) ? (window.SITE_CONFIG[_cwStationKey]?.headerText || 'מדא') : 'מדא';
+  document.getElementById('chatWidgetTitle').textContent = 'מוקד תמיכה מדא';
   const subTextEl = document.getElementById('chatWidgetSubText');
   if (subTextEl) subTextEl.textContent = stationName + ' · תמיכה 24/7';
   document.getElementById('chatWidgetMsgs').innerHTML = '';
@@ -7955,7 +8332,7 @@ function _cwNotifyAdmin(ticket) {
   const ticketId = (_cwCurrentId||'').slice(-6).toUpperCase();
   const stationName = (window.SITE_CONFIG && ticket.station && window.SITE_CONFIG[ticket.station])
     ? window.SITE_CONFIG[ticket.station].headerText
-    : (ticket.station || 'מד"א מרחב');
+    : (ticket.station || 'מדא מרחב');
 
   const params = {
     TO_NAME:       'מנהל מוקד',
@@ -7985,7 +8362,7 @@ function _cwSendReplyEmail(toEmail, message, subject) {
 
   const stationName = (window.SITE_CONFIG && _cwStationKey && window.SITE_CONFIG[_cwStationKey])
     ? window.SITE_CONFIG[_cwStationKey].headerText
-    : 'מד"א מרחב';
+    : 'מדא מרחב';
 
   const params = {
     TO_NAME:       toEmail,
