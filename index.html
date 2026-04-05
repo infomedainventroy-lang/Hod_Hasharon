@@ -6106,7 +6106,7 @@ function viewImage(src) {
 /* ================================================================
    BIOMETRIC AUTHENTICATION v2 — WebAuthn (Passkeys)
    Multi-account support: stores array of credentials per device.
-   Up to 3 Firebase registrations per user.
+   Up to 5 Firebase registrations per user.
    ================================================================ */
 
 const BIO_LS_KEY = 'mda_bio_v2'; // upgraded key — fresh start
@@ -6384,18 +6384,18 @@ function _buildBioBanner(biometrics, userId, role, count, thisDeviceRegistered) 
 
   let actionHtml;
   if (thisDeviceRegistered) {
-    actionHtml = `<div style="font-size:.76em;color:var(--c-green);font-weight:800;margin-top:8px;">✅ חשבון זה רשום במכשיר הזה · ${count}/3</div>`;
-  } else if (count >= 3) {
-    actionHtml = `<div style="font-size:.76em;color:var(--c-orange);font-weight:700;margin-top:8px;">⚠️ הגעת למגבלת 3 מכשירים — מחק אחד כדי להוסיף</div>`;
+    actionHtml = `<div style="font-size:.76em;color:var(--c-green);font-weight:800;margin-top:8px;">✅ חשבון זה רשום במכשיר הזה · ${count}/5</div>`;
+  } else if (count >= 5) {
+    actionHtml = `<div style="font-size:.76em;color:var(--c-orange);font-weight:700;margin-top:8px;">⚠️ הגעת למגבלת 5 מכשירים — מחק אחד כדי להוסיף</div>`;
   } else {
-    actionHtml = `<button class="btn btn-blue w-auto" style="margin-top:6px;" onclick="registerBiometric()">🔐 הוסף זיהוי ביומטרי למכשיר הזה (${count}/3)</button>`;
+    actionHtml = `<button class="btn btn-blue w-auto" style="margin-top:6px;" onclick="registerBiometric()">🔐 הוסף זיהוי ביומטרי למכשיר הזה (${count}/5)</button>`;
   }
 
   return `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
       <span style="font-size:1.4em;">${headerIcon}</span>
       <span style="font-weight:800;font-size:.92em;color:var(--c-navy);flex:1;">${headerText}</span>
-      ${count > 0 ? `<span style="background:#3f51b5;color:white;border-radius:var(--r-full);padding:2px 10px;font-size:.72em;font-weight:800;">${count}/3 מכשירים</span>` : ''}
+      ${count > 0 ? `<span style="background:#3f51b5;color:white;border-radius:var(--r-full);padding:2px 10px;font-size:.72em;font-weight:800;">${count}/5 מכשירים</span>` : ''}
       <button onclick="document.getElementById('${role==='admin'?'bio-setup-banner-admin':'bio-setup-banner'}').classList.add('hidden')"
         style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1em;line-height:1;padding:2px 4px;">✕</button>
     </div>
